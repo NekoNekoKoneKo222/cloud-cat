@@ -8,8 +8,14 @@ services:
     healthCheckPath: /healthz
     envVars:
       - key: DATABASE_URL
-        sync: false
+        fromDatabase:
+          name: cloud-cat-db
+          property: connectionString
       - key: SESSION_SECRET
         generateValue: true
       - key: NODE_ENV
         value: production
+
+databases:
+  - name: cloud-cat-db
+    plan: free
