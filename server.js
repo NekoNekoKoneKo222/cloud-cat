@@ -1,6 +1,7 @@
 const express=require('express');const http=require('http');const path=require('path');const fs=require('fs');const session=require('express-session');const PgSession=require('connect-pg-simple')(session);const {Pool}=require('pg');const bcrypt=require('bcryptjs');const multer=require('multer');const {Server}=require('socket.io');
 const app=express(),server=http.createServer(app),io=new Server(server,{maxHttpBufferSize:3e6}),PORT=process.env.PORT||3000;
 const pool=new Pool({connectionString:process.env.DATABASE_URL,ssl:process.env.NODE_ENV==='production'?{rejectUnauthorized:false}:false});
+const { Pool } = require("pg");
 fs.mkdirSync(path.join(__dirname,'uploads'),{recursive:true});const upload=multer({dest:path.join(__dirname,'uploads'),limits:{fileSize:5*1024*1024},fileFilter:(r,f,cb)=>cb(null,f.mimetype.startsWith('image/'))});
 const sm=session({store:new PgSession({pool,tableName:'user_sessions',createTableIfMissing:true}),secret:process.env.SESSION_SECRET||'change-me',resave:false,saveUninitialized:false,cookie:{httpOnly:true,sameSite:'lax',secure:process.env.NODE_ENV==='production',maxAge:2592000000}});app.use(sm);app.use(express.json());app.use(express.urlencoded({extended:true}));app.use('/uploads',express.static(path.join(__dirname,'uploads')));app.use(express.static(path.join(__dirname,'public')));
 const auth=(r,s,n)=>r.session.userId?n():s.status(401).json({error:'ログインが必要です'});
