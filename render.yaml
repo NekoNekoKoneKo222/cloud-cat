@@ -2,17 +2,15 @@ services:
   - type: web
     name: cloud-cat
     runtime: node
-    plan: free
-    region: ohio
-    buildCommand: npm install
+    buildCommand: npm install --omit=dev
     startCommand: npm start
     healthCheckPath: /healthz
     envVars:
-      - key: DATABASE_URL
-        fromDatabase:
-          name: cat-hub-db
-          property: connectionString
-      - key: SESSION_SECRET
-        generateValue: true
       - key: NODE_ENV
         value: production
+      - key: DATABASE_URL
+        sync: false
+      - key: SESSION_SECRET
+        sync: false
+      - key: ADMIN_USERS
+        sync: false
